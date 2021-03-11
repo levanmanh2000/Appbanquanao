@@ -7,10 +7,23 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-function Header({ title }) {
+function Header({ title, onBack }) {
+  const checkVisibleBackBtn = () => {
+    if (onBack === null) {
+      return null;
+    }
+
+    return (
+      <TouchableOpacity style={styles.backBtn} onPress={onBack}>
+        <Text style={styles.backText}>Back</Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <View style={styles.container}>
+        {checkVisibleBackBtn}
         <Text style={styles.title}>{title}</Text>
       </View>
     </SafeAreaView>
@@ -19,6 +32,7 @@ function Header({ title }) {
 
 Header.defaultProps = {
   title: "Header",
+  onBack: null,
 };
 
 const styles = StyleSheet.create({
@@ -28,12 +42,20 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: 50,
+    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
   },
   title: {
     fontSize: 30,
+  },
+  backBtn: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+  },
+  backText: {
+    fontSize: 20,
   },
 });
 

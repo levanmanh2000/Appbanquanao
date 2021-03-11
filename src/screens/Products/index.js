@@ -11,9 +11,22 @@ import {
 import data from "../../services/Products";
 import Header from "../../components/Header";
 
-function ItemList({ data }) {
+function moneyFormat(price, sign = "VND") {
+  const pieces = parseFloat(price).toFixed(1).split("");
+  let ii = pieces.length - 2;
+  while ((ii -= 3) > 0) {
+    pieces.splice(ii, 0, ",");
+  }
+  return sign + " " + pieces.join("");
+}
+
+function ItemList({ navigation, data }) {
   return (
-    <TouchableOpacity onPress={() => Alert.alert("Buy")}>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("ProductDetail", { idProduct: data.id })
+      }
+    >
       <View style={styles.container}>
         <View>
           <Image
@@ -27,7 +40,7 @@ function ItemList({ data }) {
           <Text style={styles.header} numberOfLines={2}>
             {data.name}
           </Text>
-          <Text style={styles.price}>Price: {data.price}</Text>
+          <Text style={styles.price}>Price: {moneyFormat(data.price)}</Text>
           <Text>Colour: {data.colour}</Text>
         </View>
       </View>
@@ -42,7 +55,9 @@ function Products({ navigation }) {
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ItemList data={item}></ItemList>}
+        renderItem={({ item }) => (
+          <ItemList navigation={navigation} data={item}></ItemList>
+        )}
       ></FlatList>
     </View>
   );

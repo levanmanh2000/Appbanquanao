@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -8,19 +8,14 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import data from "../../services/Products";
+import { useNavigation } from "@react-navigation/native";
+import data from "../../services/data";
 import Header from "../../components/Header";
+import moneyFormat from "../../services/moneyFormat";
+import Context from "../../services/Context";
 
-function moneyFormat(price, sign = "VND") {
-  const pieces = parseFloat(price).toFixed(1).split("");
-  let ii = pieces.length - 2;
-  while ((ii -= 3) > 0) {
-    pieces.splice(ii, 0, ",");
-  }
-  return sign + " " + pieces.join("");
-}
-
-function ItemList({ navigation, data }) {
+function ItemList({ data }) {
+  const navigation = useNavigation();
   return (
     <TouchableOpacity
       onPress={() =>
@@ -48,13 +43,56 @@ function ItemList({ navigation, data }) {
   );
 }
 
+function renderBadge() {
+  const [context, setContext] = useContext(Context);
+  let count = 0;
+  if (Object.keys(context).length === 0) {
+    count = 0;
+  } else {
+    context.forEach((item) => {
+      if (item.quantity !== 0) {
+        count = count + item.quantity;
+      }
+    });
+  }
+
+  return (
+    <>
+      <Text
+        style={{
+          top: -10,
+        }}
+      >
+        Order
+      </Text>
+      {count !== 0 && (
+        <View
+          style={{
+            right: 10,
+            top: 10,
+            backgroundColor: "#000",
+            padding: 5,
+            borderRadius: 10,
+          }}
+        >
+          <Text style={{ color: "#fff" }}>{count}</Text>
+        </View>
+      )}
+    </>
+  );
+}
+
 function Products({ navigation }) {
   return (
     <View style={styles.all}>
-      <Header title="Products"></Header>
+      <Header
+        title="Products"
+        rightComponent={renderBadge()}
+        rightButton={() => navigation.navigate("Order")}
+      ></Header>
       <FlatList
         data={data}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString}
         renderItem={({ item }) => (
           <ItemList navigation={navigation} data={item}></ItemList>
         )}
